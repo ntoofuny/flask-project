@@ -1,6 +1,6 @@
 from models import User
 
-query = User.delete().where(User.id ==3)
+#query = User.delete().where(User.id ==3)
 query.execute()
 users = User.select()
 

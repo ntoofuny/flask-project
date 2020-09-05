@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{%block content %}
+<form method = POST>
+    {{ form.hidden_tag() }}
+    {{form.search() }}
+            {{ form.submit() }}
+</form>
+
+{% for user in users %}
+<a href="{{ url_for('user', username = user.username)}}">{{user.username}}</a>
+{%endfor %}
+
+{%endblock %}

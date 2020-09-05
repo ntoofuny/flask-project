@@ -1,7 +1,9 @@
-from flask import (Flask, g, render_template, flash, redirect, url_for)
-from flask_login import (LoginManager, login_user, logout_user, login_required)
+from flask import (Flask, g, render_template, flash, redirect, url_for, session, request)
+from flask_login import (LoginManager, login_user, logout_user, login_required, current_user)
 from flask_bcrypt import check_password_hash
-
+from flask_socketio import emit, join_room, leave_room, SocketIO
+from werkzeug.utils import secure_filename
+import os
 import models
 import forms
 
@@ -16,6 +18,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+socketio = SocketIO(app)
+
+UPLOAD_FOLDER = 'static/uploads/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 @login_manager.user_loader
 def load_user(userid):
@@ -37,7 +44,7 @@ def after_request(response):
     return response
 
 
-@app.hroute('/register', metods=('GET', 'POST'))
+@app.route('/register', methods=('GET', 'POST'))
 def register():
     form = forms.RegisterForm()
     if form.validate_on_submit():
@@ -68,12 +75,42 @@ def login():
                 flash("Your email or password doesn't match!", "error")
     return render_template('login.html', form=form)
 
+@app.route('/search', methods=['GET', 'POST'])
+@login_required
+def search():
+    form = forms.SearchForm()
+    users = models.User.select();
+    return render_template("search.html", form = form, users = users)
 
-@app.route('/<username>')
+@app.route('/<username>', methods=['GET', 'POST'])
 @login_required
 def user(username):
     user = models.User.get(models.User.username == username)
-    return render_template('user.html', user=user)
+    form = forms.ChatForm()
+
+    if form.validate_on_submit():
+        session['name'] = current_user.username
+        session['room'] = user.username + "'s chatroom"
+        return redirect(url_for('.chat'))
+    if request.method == 'POST' and 'file' in request.files:
+        file = request.files['file']
+        filename = user.username+".jpg"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+    return render_template('user.html', user=user, form =form)
+
+@app.route('/chat')
+@login_required
+def chat():
+    """Chat room. The user's name and room must be stored in
+    the session."""
+    name = session.get('name', '')
+    room = session.get('room', '')
+    if name == '' or room == '':
+        return redirect(url_for('index'))
+    return render_template('chat.html', name=name, room=room)
+
 
 @app.route('/logout')
 @login_required
@@ -87,6 +124,30 @@ def logout():
 def index():
     return render_template("index.html")
 
+@socketio.on('joined', namespace='/chat')
+def joined(message):
+    """Sent by clients when they enter a room.
+    A status message is broadcast to all people in the room."""
+    room = session.get('room')
+    join_room(room)
+    emit('status', {'msg': session.get('name') + ' has entered the room.'}, room=room)
+
+
+@socketio.on('text', namespace='/chat')
+def text(message):
+    """Sent by a client when the user entered a new message.
+    The message is sent to all people in the room."""
+    room = session.get('room')
+    emit('message', {'msg': session.get('name') + ':' + message['msg']}, room=room)
+
+
+@socketio.on('left', namespace='/chat')
+def left(message):
+    """Sent by clients when they leave a room.
+    A status message is broadcast to all people in the room."""
+    room = session.get('room')
+    leave_room(room)
+    emit('status', {'msg': session.get('name') + ' has left the room.'}, room=room)
 
 if __name__ == '__main__':
     models.initialize()
@@ -100,4 +161,4 @@ if __name__ == '__main__':
         print("didn't work")
         pass
 
-    app.run(debug= True)
+    socketio.run(app,debug= True)

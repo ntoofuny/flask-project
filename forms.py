@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from models import User
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email, Length, EqualTo)
 
 def name_exists(form, field):
@@ -43,3 +43,11 @@ class RegisterForm(Form):
 class LoginForm(Form):
   email = StringField('Email', validators=[DataRequired(), Email ()])
   password = PasswordField('Password', validators =[DataRequired()])
+
+class SearchForm(Form):
+  search = StringField("Enter username", validators=[DataRequired()])
+  submit = SubmitField("Submit")
+
+class ChatForm(Form):
+  """Accepts a nickname and a room."""
+  submit = SubmitField('Enter Chatroom')
