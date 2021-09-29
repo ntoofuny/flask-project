@@ -6,6 +6,8 @@ from werkzeug.utils import secure_filename
 import os
 import models
 import forms
+from PIL import Image
+#import flask_resize
 
 DEBUG = True
 PORT = 8000
@@ -23,6 +25,8 @@ socketio = SocketIO(app)
 UPLOAD_FOLDER = 'static/uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+
 
 @login_manager.user_loader
 def load_user(userid):
@@ -97,6 +101,10 @@ def user(username):
         filename = user.username+".jpg"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
+        im = Image.open(filepath)
+        size = (150, 100)
+        out = im.resize(size)
+        out.save(filepath)
 
     return render_template('user.html', user=user, form =form)
 
