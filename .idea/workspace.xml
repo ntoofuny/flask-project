@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d88566f5-9a1a-40be-9498-ecf18e5d55a1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -29,16 +30,16 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\neila\PycharmProjects\project" />
+      <recent name="C:\Users\neila\PycharmProjects\project\templates" />
+      <recent name="C:\Users\neila\PycharmProjects\project\static" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\neila\PycharmProjects\project\templates" />
       <recent name="C:\Users\neila\PycharmProjects\project\static\assets" />
       <recent name="C:\Users\neila\PycharmProjects\project" />
       <recent name="C:\Users\neila\PycharmProjects\project\templates\static" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\neila\PycharmProjects\project\templates" />
-      <recent name="C:\Users\neila\PycharmProjects\project\static" />
-      <recent name="C:\Users\neila\PycharmProjects\project" />
     </key>
   </component>
   <component name="RunDashboard">
